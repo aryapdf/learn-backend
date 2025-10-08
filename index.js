@@ -47,11 +47,33 @@ switch (command) {
     if (tasks.length === 0) {
       console.log("No tasks yet.");
     } else {
-      console.log("Tasks List");
-      console.log("-------------------------");
-      tasks.forEach((task, index) => {
-        console.log(`${index + 1}. ${task.title} | [${task.status}]`)
-      });
+      if (args.length === 0) {
+        console.log("Tasks List");
+        console.log("-------------------------");
+        tasks.forEach((task, index) => {
+          console.log(`${index + 1}. ${task.title} | [${task.status}]`)
+        });
+      } else {
+        const filterStatus = args[0];
+        const validStatus = ["todo", "in-progress", "done"];
+
+        if (!validStatus.includes(filterStatus)) {
+          console.log(`Invalid status ${filterStatus}. Use one of ${validStatus.join(", ")}`);
+          process.exit(1);
+        }
+
+        const filteredTask = tasks.filter(task => task.status === filterStatus);
+        if (filteredTask.length === 0) {
+          console.log("No tasks yet.");
+        } else {
+          console.log("Tasks List");
+          console.log("-------------------------");
+          filteredTask.forEach((task, index) => {
+            console.log(`${index + 1}. ${task.title} | [${task.status}]`)
+          });
+        }
+
+      }
     }
     break;
   }

@@ -2,6 +2,16 @@
   {
     "id": 1,
     "title": "Learn Javascript and Backend",
-    "status": "todo"
+    "status": "in-progress"
+  },
+  {
+    "id": 2,
+    "title": "Learn Back-End",
+    "status": "done"
+  },
+  {
+    "id": 3,
+    "title": "Playing Guitar",
+    "status": "in-progress"
   }
 ]

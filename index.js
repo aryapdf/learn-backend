@@ -44,7 +44,7 @@ switch (command) {
     } else {
       console.log("Tasks List");
       tasks.forEach((task, index) => {
-        console.log(`${index + 1}. ${task.title} [${task.status}]`)
+        console.log(`${index + 1}. ID: ${task.id} | ${task.title} | [${task.status}]`)
       });
     }
     break;
@@ -70,6 +70,52 @@ switch (command) {
     task.title = newTitle;
     saveTasks(tasks);
     console.log(`Task ${task.id} is updated successfully.`);
+    break;
+  }
+
+  case "mark-in-progress": {
+    const taskId = args[0];
+    const tasks = loadTasks();
+
+    if (!taskId) {
+      console.log("Use format task-cli mark-in-progress <task-id>");
+      process.exit(1);
+    }
+
+    const task = tasks.find(task => task.id === Number(taskId));
+
+    if (!task) {
+      console.log("Tasks ID not found, try again.");
+      process.exit(1);
+    };
+
+    task.status = 'in-progress';
+    saveTasks(tasks);
+    console.log(`Task ${task.id} is in progress!`);
+
+    break;
+  }
+
+  case "mark-done": {
+    const taskId = args[0];
+    const tasks = loadTasks();
+
+    if (!taskId) {
+      console.log("Use format task-cli mark-done <task-id>");
+      process.exit(1);
+    }
+
+    const task = tasks.find(task => task.id === Number(taskId));
+
+    if (!task) {
+      console.log("Tasks ID not found, try again.");
+      process.exit(1);
+    };
+
+    task.status = 'done';
+    saveTasks(tasks);
+    console.log(`Task ${task.id} is done!`);
+
     break;
   }
 

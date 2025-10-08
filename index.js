@@ -73,7 +73,31 @@ switch (command) {
     break;
   }
 
+  case "delete" : {
+    const taskId = args[0];
+    const tasks = loadTasks();
+
+    if (!taskId) {
+      console.log("Use format task-cli delete <task-id>");
+      process.exit(1);
+    }
+
+    const deletedTaskIndex = tasks.findIndex(task => task.id === Number(taskId));
+    const deletedTask = tasks[deletedTaskIndex];
+
+    if (deletedTask === -1) {
+      console.log("Task not found! Try again.");
+      process.exit(1);
+    }
+
+    tasks.splice(deletedTaskIndex, 1);
+    saveTasks(tasks);
+
+    console.log(`Task "${deletedTask.title}" is deleted.`);
+    break;
+  }
+
   default:
-    console.log(`Use command "add" for add task, "list" for list task.`);
+    console.log(`Use command "add" for add task, "list" for list task, "update" to edit task, "delete" to delete task.`);
 }
 

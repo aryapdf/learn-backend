@@ -7,7 +7,12 @@ const TASKS_FILE = "./tasks.json";
 function loadTasks() {
 	if (!fs.existsSync(TASKS_FILE)) return [];
 	const data = fs.readFileSync(TASKS_FILE, "utf8");
-	return JSON.parse(data || "[]");
+    try {
+      return JSON.parse(data || "[]");
+    } catch {
+      console.error("⚠️ tasks.json corrupted, resetting file...");
+      return [];
+    }
 }
 
 function saveTasks(tasks) {
@@ -21,13 +26,13 @@ const [,, command, ...args] = process.argv;
 switch (command) {
   case "add": {
     const task = args.join(" ");
-		if (!task) {
+    if (!task) {
       console.log("Please add task name");
       process.exit(1);
-		}
+    }
     const tasks = loadTasks();
     const addedTask = {
-      id: tasks.length + 1,
+      id: Date.now(),
       title: task,
       status: "todo"
     };
@@ -43,107 +48,115 @@ switch (command) {
       console.log("No tasks yet.");
     } else {
       console.log("Tasks List");
+      console.log("-------------------------");
       tasks.forEach((task, index) => {
-        console.log(`${index + 1}. ID: ${task.id} | ${task.title} | [${task.status}]`)
+        console.log(`${index + 1}. ${task.title} | [${task.status}]`)
       });
     }
     break;
   }
 
   case "update": {
-    const [taskId, ...newTitleArgument] = args;
+    const [taskNumber, ...newTitleArgument] = args;
     const newTitle = newTitleArgument.join(" ");
     const tasks = loadTasks();
 
-    if (!taskId || !newTitle) {
-      console.log("Use format: task-cli update <id> <judul_baru>");
+    if (!taskNumber || !newTitle) {
+      console.log("Use format: task-cli update <number> <new_title>");
       process.exit(1);
     };
 
-    const task = tasks.find(task => task.id === Number(taskId));
-
-    if (!task) {
-      console.log("Tasks ID not found, try again.");
+    if (taskNumber < 1 || taskNumber > tasks.length) {
+      console.log("Task number not found, try again.");
       process.exit(1);
-    };
+    }
+
+    const task = tasks[taskNumber - 1];
 
     task.title = newTitle;
     saveTasks(tasks);
-    console.log(`Task ${task.id} is updated successfully.`);
+    console.log(`Task ${taskNumber} is updated successfully.`);
     break;
   }
 
   case "mark-in-progress": {
-    const taskId = args[0];
+    const taskNumber = Number(args[0]);
     const tasks = loadTasks();
 
-    if (!taskId) {
-      console.log("Use format task-cli mark-in-progress <task-id>");
+    if (!taskNumber) {
+      console.log("Use format task-cli mark-in-progress <task-number>");
       process.exit(1);
     }
 
-    const task = tasks.find(task => task.id === Number(taskId));
+    const task = tasks[taskNumber - 1];
 
     if (!task) {
-      console.log("Tasks ID not found, try again.");
+      console.log("Task number not found, try again.");
       process.exit(1);
     };
 
     task.status = 'in-progress';
     saveTasks(tasks);
-    console.log(`Task ${task.id} is in progress!`);
+    console.log(`Task No.${taskNumber} is in progress!`);
 
     break;
   }
 
   case "mark-done": {
-    const taskId = args[0];
+    const taskNumber = Number(args[0]);
     const tasks = loadTasks();
 
-    if (!taskId) {
-      console.log("Use format task-cli mark-done <task-id>");
+    if (!taskNumber) {
+      console.log("Use format task-cli mark-done <task-number>");
       process.exit(1);
     }
 
-    const task = tasks.find(task => task.id === Number(taskId));
+    const task = tasks[taskNumber - 1];
 
     if (!task) {
-      console.log("Tasks ID not found, try again.");
+      console.log("Task number not found, try again.");
       process.exit(1);
     };
 
     task.status = 'done';
     saveTasks(tasks);
-    console.log(`Task ${task.id} is done!`);
+    console.log(`Task No.${taskNumber} is done!`);
 
     break;
   }
 
   case "delete" : {
-    const taskId = args[0];
+    const taskNumber = Number(args[0]);
     const tasks = loadTasks();
 
-    if (!taskId) {
-      console.log("Use format task-cli delete <task-id>");
+
+    if (!taskNumber || isNaN(taskNumber)) {
+      console.log("Please provide a valid task number: task-cli delete <number>");
       process.exit(1);
     }
 
-    const deletedTaskIndex = tasks.findIndex(task => task.id === Number(taskId));
-    const deletedTask = tasks[deletedTaskIndex];
-
-    if (deletedTask === -1) {
-      console.log("Task not found! Try again.");
+    if (taskNumber < 1 || taskNumber > tasks.length) {
+      console.log(`Task number ${taskNumber} not found.`);
       process.exit(1);
     }
 
-    tasks.splice(deletedTaskIndex, 1);
+    const deletedTask = tasks[taskNumber - 1];
+    tasks.splice(taskNumber - 1, 1);
     saveTasks(tasks);
 
-    console.log(`Task "${deletedTask.title}" is deleted.`);
+    console.log(`Task "${deletedTask.title}" deleted.`);
     break;
   }
 
   default:
-    console.log(`Use command "add" for add task, "list" for list task, "update" to edit task, "delete" to delete task.`);
+    console.log(`
+    Available Commands:
+      task-cli add "Task name"            → Add a new task
+      task-cli list                       → List all tasks
+      task-cli update <number> "New title"    → Update a task title
+      task-cli mark-in-progress <number>      → Mark a task as in progress
+      task-cli mark-done <number>             → Mark a task as done
+      task-cli delete <number>                → Delete a task
+`);
 }
 

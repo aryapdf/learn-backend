@@ -65,8 +65,19 @@ rl.question('Hello, Who are you? ', async (val) => {
                     console.log(`Error: ${e}`);
             }
         } else {
-            console.log('Github User Activity')
-            console.table(response)
+            console.log('Github User Activity\n')
+            response.map((eachData) => {
+                if (eachData.type === 'PushEvent') {
+                    console.log(`- Pushed a commit to ${eachData.repo_name}\n`
+                    )
+                }
+                if (eachData.type === 'CreateEvent') {
+                    console.log(`- Just created an Event called ${eachData.repo_name}\n`)
+                }
+                if (eachData.type === 'WatchEvent') {
+                    console.log(`- Watching ${eachData.repo_name}...\n`)
+                }
+            })
         }
     } catch (e) {
         throw new Error(e)

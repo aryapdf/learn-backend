@@ -66,16 +66,27 @@ rl.question('Hello, Who are you? ', async (val) => {
             }
         } else {
             console.log('Github User Activity\n')
-            response.map((eachData) => {
+
+            const grouped = {}
+
+            response.forEach(event => {
+                const key = `${event.type}-${event.name}`
+                if (!grouped[key]) {
+                    grouped[key] = {...event, count: 1};
+                } else {
+                    grouped[key].count++
+                }
+            })
+
+            Object.values(grouped).forEach(eachData => {
                 if (eachData.type === 'PushEvent') {
-                    console.log(`- Pushed a commit to ${eachData.repo_name}\n`
-                    )
+                    console.log(`- Pushed ${eachData.count > 1 ? eachData.count + ' Commits' : 'a Commit'} to ${eachData.repo_name}\n`)
                 }
                 if (eachData.type === 'CreateEvent') {
-                    console.log(`- Just created an Event called ${eachData.repo_name}\n`)
+                    console.log(`- Just created ${eachData.count > 1 ? eachData.count + ' Events' : 'an Event'} in ${eachData.repo_name}\n`)
                 }
                 if (eachData.type === 'WatchEvent') {
-                    console.log(`- Watching ${eachData.repo_name}...\n`)
+                    console.log(`- Watching ${eachData.repo_name}... ${eachData.count > 1 ? "(" + eachData.count + " times)" : ''}\n`)
                 }
             })
         }

@@ -1,0 +1,23 @@
+{
+  "name": "learn-backend",
+  "version": "1.0.0",
+  "description": "My private repository to learn backend, in various project, in various language.",
+  "main": "index.js",
+  "bin": {
+    "name": "github-activity"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aryapdf/learn-backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aryapdf/learn-backend/issues"
+  },
+  "homepage": "https://github.com/aryapdf/learn-backend#readme"
+}

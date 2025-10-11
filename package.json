@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "My private repository to learn backend, in various project, in various language.",
   "main": "index.js",
+  "bin": {
+    "name": "github-activity"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
